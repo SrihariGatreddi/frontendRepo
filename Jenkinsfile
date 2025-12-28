@@ -1,36 +1,48 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    environment {
+        APP_HOST    = "44.204.223.75"          // Target EC2 IP (private/public)
+        SSH_USER   = "ubuntu"
+        SSH_CRED   = "ec2-ssh-key"         // Jenkins credential ID
     }
 
-    stage('Install') {
-      steps {
-        sh 'npm ci'
-      }
+    stages {
+
+        stage("Checkout Code") {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/SrihariGatreddi/frontendRepo.git'
+            }
+        }
+
+        stage("Build Application") {
+            steps{
+                sh '''
+                    mvn clean package -DskipTests
+                '''
+            }
+        }
+
+        stage("Deploy to EC2") {
+            steps {
+                sshagent([SSH_CRED]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${SSH_USER}@${APP_HOST} '
+                            echo "Deploying application on EC2..."
+                        '
+                    """
+                }
+            }
+        }
     }
 
-    stage('Build') {
-      steps {
-        sh 'npm run build'
-      }
+    post {
+        success {
+            echo "✅ Build and deployment completed successfully"
+        }
+        failure {
+            echo "❌ Pipeline failed"
+        }
     }
-
-    stage('Deploy') {
-      steps {
-        sh './deploy-frontend.sh'
-      }
-    }
-  }
-
-  post {
-    always {
-      archiveArtifacts artifacts: 'build/**', allowEmptyArchive: true
-    }
-  }
 }
-
