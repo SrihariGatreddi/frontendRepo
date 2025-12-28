@@ -36,6 +36,8 @@ pipeline {
         }
         failure {
             echo "❌ Pipeline failed"
+
+            echo "Collecting logs for debugging..."
         }
     }
 }
