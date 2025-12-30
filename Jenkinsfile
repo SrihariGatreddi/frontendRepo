@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        APP_HOST    = "44.204.223.75"          // Target EC2 IP (private/public)
+        APP_HOST    = "3.237.233.61"          // Target EC2 IP (private/public)
         SSH_USER   = "ubuntu"
         SSH_CRED   = "ec2-ssh-key"         // Jenkins credential ID
     }
