@@ -17,6 +17,6 @@ sudo chown -R www-data:www-data ${WEB_ROOT}
 sudo chmod -R 755 ${WEB_ROOT}
 
 # Restart web server
-sudo systemctl restart nginx
+sudo systemctl restart apache2
 
 echo "Frontend deployment completed successfully."
